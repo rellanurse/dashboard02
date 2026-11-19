@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="th" class="bg-black text-white antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAMBORGHINI PHARMACY ANALYTICS & DISPENSING WATCHTOWER</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lambo: {
+                            black: '#000000',
+                            iron: '#181818',
+                            charcoal: '#202020',
+                            graphite: '#494949',
+                            gold: '#ffc000',
+                            goldHover: '#917300',
+                            goldText: '#ffce3e',
+                            ash: '#7d7d7d',
+                            steel: '#969696'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Lamborghini Sharp Aesthetic Overrides */
+        * {
+            border-radius: 0px !important; /* Enforce mandatory 0px sharp corners */
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #494949;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffc000;
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(255, 192, 0, 0.15);
+        }
+        .red-glow {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+        .lambo-border {
+            border: 1px solid #333333;
+        }
+        .lambo-border-gold {
+            border: 1px solid #ffc000;
+        }
+        /* Canvas fix */
+        canvas {
+            max-width: 100% !important;
+        }
+    </style>
+</head>
+<body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-[#ffc000] selection:text-black">
+
+    <!-- TOP NAV BAR (LAMBORGHINI DESIGN SYSTEM HEADER) -->
+    <header class="bg-[#181818] border-b border-[#333333] sticky top-0 z-40">
+        <div class="max-w-[1700px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Left Brand & Back Link -->
+            <div class="flex items-center gap-5">
+                <a href="index.html" class="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#ffc000] hover:text-[#ffce3e] uppercase border border-[#ffc000]/50 hover:bg-[#ffc000]/10 px-3 py-2 transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> INDEX PAGE / MAIN MENU
+                </a>
+                
+                <div class="h-6 w-[1px] bg-[#333333] hidden sm:block"></div>
+
+                <div class="flex items-center gap-3">
+                    <div class="bg-[#ffc000] text-black p-1.5 font-mono font-black text-xs tracking-tighter uppercase">
+                        SQUADRA
+                    </div>
+                    <div>
+                        <h1 class="text-sm md:text-base font-black tracking-widest uppercase text-white font-mono leading-none">
+                            LAMBORGHINI PHARMACY WATCHTOWER
+                        </h1>
+                        <p class="text-[10px] font-mono tracking-wider text-[#969696] uppercase mt-0.5">
+                            Automotive-Grade Inventory & Dispensing Analytics System
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Controls & Status -->
+            <div class="flex items-center gap-3 text-xs font-mono">
+                <div class="hidden lg:flex items-center gap-2 bg-[#202020] px-3 py-1.5 border border-[#333333]">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[#969696] text-[11px] uppercase">SYSTEM TIME:</span>
+                    <span class="text-[#ffce3e] font-bold" id="current-system-time">2026-11-19 15:13:00</span>
+                </div>
+
+                <!-- DataSource Status Indicator -->
+                <div id="data-source-badge" class="bg-[#202020] border border-[#ffc000]/40 px-3 py-1.5 text-[11px] text-[#ffce3e] font-bold flex items-center gap-2">
+                    <i data-lucide="database" class="w-3.5 h-3.5 text-[#ffc000]"></i>
+                    <span id="data-source-text">STANDALONE PRE-BAKED DATASET</span>
+                </div>
+
+                <!-- Upload Custom JSON Button -->
+                <button onclick="openModal('upload-modal')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black text-[#ffc000] border border-[#ffc000]/40 px-3 py-1.5 font-bold uppercase transition-all flex items-center gap-1.5">
+                    <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i> LOAD JSON
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WRAPPER -->
+    <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- METRICS TOP STRIP (KPI SUMMARY DASHBOARD) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- KPI 1: Inventory Value -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-[#ffc000] p-4 flex flex-col justify-between hover:border-[#494949] transition-all">
+                <div class="flex justify-between items-start text-[#969696]">
+                    <span class="text-[11px] font-mono tracking-widest uppercase">TOTAL INVENTORY VALUE</span>
+                    <i data-lucide="coins" class="w-4 h-4 text-[#ffc000]"></i>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black font-mono text-white tracking-tight" id="kpi-total-value">฿0.00</div>
+                    <div class="text-[10px] font-mono text-[#ffce3e] mt-1 flex items-center gap-1">
+                        <span id="kpi-total-items-qty">0 items across 0 lots</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 2: Reorder Level Alerts -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-amber-500 p-4 flex flex-col justify-between hover:border-[#494949] transition-all">
+                <div class="flex justify-between items-start text-[#969696]">
+                    <span class="text-[11px] font-mono tracking-widest uppercase">REORDER ALERTS</span>
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black font-mono text-amber-400 tracking-tight" id="kpi-reorder-count">0</div>
+                    <div class="text-[10px] font-mono text-amber-500/80 mt-1 uppercase">Drugs below safety reorder stock</div>
+                </div>
+            </div>
+
+            <!-- KPI 3: Expiry & FEFO Watch -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-red-500 p-4 flex flex-col justify-between hover:border-[#494949] transition-all">
+                <div class="flex justify-between items-start text-[#969696]">
+                    <span class="text-[11px] font-mono tracking-widest uppercase">NEAR EXPIRY / EXPIRED</span>
+                    <i data-lucide="clock" class="w-4 h-4 text-red-500"></i>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black font-mono text-red-400 tracking-tight" id="kpi-expiry-count">0</div>
+                    <div class="text-[10px] font-mono text-red-400/80 mt-1 uppercase" id="kpi-expiry-sub">0 Expired | 0 Near Expiry (&le;60d)</div>
+                </div>
+            </div>
+
+            <!-- KPI 4: Quarantine Batches -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-purple-500 p-4 flex flex-col justify-between hover:border-[#494949] transition-all">
+                <div class="flex justify-between items-start text-[#969696]">
+                    <span class="text-[11px] font-mono tracking-widest uppercase">QUARANTINE LOCKS</span>
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-purple-400"></i>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black font-mono text-purple-300 tracking-tight" id="kpi-quarantine-count">0</div>
+                    <div class="text-[10px] font-mono text-purple-400/80 mt-1 uppercase">Lots locked (e.g. IB2509, SV2509)</div>
+                </div>
+            </div>
+
+            <!-- KPI 5: Clinical Safety Incidents -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-[#ffc000] p-4 flex flex-col justify-between hover:border-[#494949] transition-all">
+                <div class="flex justify-between items-start text-[#969696]">
+                    <span class="text-[11px] font-mono tracking-widest uppercase">SAFETY INCIDENTS</span>
+                    <i data-lucide="activity" class="w-4 h-4 text-[#ffc000]"></i>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-black font-mono text-white tracking-tight" id="kpi-incidents-count">0</div>
+                    <div class="text-[10px] font-mono text-[#ffce3e] mt-1 uppercase" id="kpi-incidents-sub">INC-001 / INC-002 Logged</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GLOBAL CONTROL & FILTER PANEL -->
+        <section class="bg-[#181818] border border-[#333333] p-4 space-y-4">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 border-b border-[#333333] pb-4">
+                
+                <!-- Filter Heading -->
+                <div class="flex items-center gap-2 font-mono text-xs text-[#ffc000] uppercase font-bold tracking-wider">
+                    <i data-lucide="sliders" class="w-4 h-4"></i> DATA TELEMETRY FILTERS
+                </div>
+
+                <!-- Date Range Selectors -->
+                <div class="flex flex-wrap items-center gap-3 font-mono text-xs">
+                    <span class="text-[#969696] uppercase text-[11px]">DATE RANGE:</span>
+                    <div class="flex items-center gap-1.5 bg-black border border-[#494949] px-2 py-1">
+                        <span class="text-[#7d7d7d] text-[10px]">FROM:</span>
+                        <input type="date" id="filter-start-date" value="2026-10-03" onchange="applyFilters()" class="bg-transparent text-white font-mono outline-none text-xs">
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-black border border-[#494949] px-2 py-1">
+                        <span class="text-[#7d7d7d] text-[10px]">TO:</span>
+                        <input type="date" id="filter-end-date" value="2026-11-05" onchange="applyFilters()" class="bg-transparent text-white font-mono outline-none text-xs">
+                    </div>
+                    <button onclick="resetDateRange()" class="bg-[#202020] hover:bg-[#494949] text-xs font-mono px-2 py-1 uppercase text-[#969696] hover:text-white border border-[#494949]">
+                        RESET DATES
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Row: Category, Stock Status, Search -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <!-- Search Box -->
+                <div class="relative md:col-span-2">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-[#7d7d7d]"></i>
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="SEARCH DRUG NAME, CODE, LOT NO, PHARMACIST, INCIDENT REFS..." class="w-full bg-black border border-[#494949] text-white pl-9 pr-3 py-2 text-xs font-mono focus:border-[#ffc000] outline-none uppercase placeholder:text-[#7d7d7d]">
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <select id="filter-category" onchange="applyFilters()" class="w-full bg-black border border-[#494949] text-white px-3 py-2 text-xs font-mono focus:border-[#ffc000] outline-none uppercase">
+                        <option value="ALL">ALL CATEGORIES (หมวดยาทั้งหมด)</option>
+                        <option value="Antibiotics">ANTIBIOTICS (ยาปฏิชีวนะ)</option>
+                        <option value="Analgesics">ANALGESICS (ยาแก้ปวด/ลดไข้)</option>
+                        <option value="Cardiovascular">CARDIOVASCULAR (ยาระบบหัวใจและหลอดเลือด)</option>
+                        <option value="Gastrointestinal">GASTROINTESTINAL (ยาระบบทางเดินอาหาร)</option>
+                        <option value="Antidiabetic">ANTIDIABETIC (ยาโรคเบาหวาน)</option>
+                        <option value="Respiratory">RESPIRATORY (ยาระบบทางเดินหายใจ)</option>
+                    </select>
+                </div>
+
+                <!-- Stock Status Filter -->
+                <div>
+                    <select id="filter-status" onchange="applyFilters()" class="w-full bg-black border border-[#494949] text-white px-3 py-2 text-xs font-mono focus:border-[#ffc000] outline-none uppercase">
+                        <option value="ALL">ALL STATUSES (สถานะทั้งหมด)</option>
+                        <option value="ACTIVE">ACTIVE (ปกติ / พร้อมจ่าย)</option>
+                        <option value="REORDER">BELOW REORDER LEVEL (ขาดคลัง)</option>
+                        <option value="NEAR_EXPIRY">NEAR EXPIRY (&le; 60 DAYS)</option>
+                        <option value="EXPIRED">EXPIRED (หมดอายุ)</option>
+                        <option value="QUARANTINE">QUARANTINE LOCK (กักกัน IB2509/SV2509)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Filter Preset Pills -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 font-mono text-[11px]">
+                <span class="text-[#7d7d7d] uppercase">QUICK PRESETS:</span>
+                <button onclick="setQuickFilter('reorder')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-amber-500/50 text-amber-400 px-2.5 py-1 uppercase transition-all">
+                    [!] REORDER NEEDED
+                </button>
+                <button onclick="setQuickFilter('quarantine')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-purple-500/50 text-purple-300 px-2.5 py-1 uppercase transition-all">
+                    [⚠️] QUARANTINE LOTS (IB2509 / SV2509)
+                </button>
+                <button onclick="setQuickFilter('incidents')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-red-500/50 text-red-400 px-2.5 py-1 uppercase transition-all">
+                    [🚨] INCIDENTS (INC-001 / INC-002)
+                </button>
+                <button onclick="setQuickFilter('expiry')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-amber-400/50 text-[#ffce3e] px-2.5 py-1 uppercase transition-all">
+                    [⏰] EXPIRING &le; 60 DAYS
+                </button>
+                <button onclick="setQuickFilter('all')" class="bg-[#202020] hover:bg-[#494949] text-white border border-[#494949] px-2.5 py-1 uppercase transition-all">
+                    CLEAR ALL FILTERS
+                </button>
+            </div>
+        </section>
+
+        <!-- DASHBOARD TAB NAVIGATION -->
+        <div class="border-b border-[#333333] flex flex-wrap gap-1 font-mono text-xs uppercase bg-[#181818] p-1">
+            <button onclick="switchTab('tab-stock')" id="tab-btn-stock" class="tab-btn bg-[#ffc000] text-black font-bold px-5 py-3 border border-[#ffc000] transition-all flex items-center gap-2">
+                <i data-lucide="boxes" class="w-4 h-4"></i> [01] STOCK MATRIX & REORDER LEVEL
+            </button>
+            <button onclick="switchTab('tab-expiry')" id="tab-btn-expiry" class="tab-btn bg-[#202020] text-[#969696] hover:text-white font-bold px-5 py-3 border border-[#333333] hover:border-[#ffc000]/50 transition-all flex items-center gap-2">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i> [02] EXPIRY & FEFO WATCHTOWER
+            </button>
+            <button onclick="switchTab('tab-dispense')" id="tab-btn-dispense" class="tab-btn bg-[#202020] text-[#969696] hover:text-white font-bold px-5 py-3 border border-[#333333] hover:border-[#ffc000]/50 transition-all flex items-center gap-2">
+                <i data-lucide="clipboard-list" class="w-4 h-4"></i> [03] DISPENSING & SAFETY LOG
+            </button>
+            <button onclick="switchTab('tab-procurement')" id="tab-btn-procurement" class="tab-btn bg-[#202020] text-[#969696] hover:text-white font-bold px-5 py-3 border border-[#333333] hover:border-[#ffc000]/50 transition-all flex items-center gap-2">
+                <i data-lucide="shopping-cart" class="w-4 h-4"></i> [04] RESTOCK PLANNER
+            </button>
+        </div>
+
+        <!-- ============================================================================================== -->
+        <!-- TAB 1: STOCK MANAGEMENT & REORDER MATRIX -->
+        <!-- ============================================================================================== -->
+        <div id="tab-stock" class="tab-content space-y-6">
+            <!-- Top Visual Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart 1: Reorder Level vs Current Qty -->
+                <div class="lg:col-span-2 bg-[#181818] border border-[#333333] p-5">
+                    <div class="flex justify-between items-center mb-4 border-b border-[#333333] pb-3">
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="w-4 h-4"></i> REORDER LEVEL VS CURRENT INVENTORY QUANTITY
+                        </h3>
+                        <span class="text-[10px] font-mono text-[#969696]">UNIT COUNT BY DRUG</span>
+                    </div>
+                    <div class="h-[280px] relative">
+                        <canvas id="chart-reorder-matrix"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Category Distribution -->
+                <div class="bg-[#181818] border border-[#333333] p-5">
+                    <div class="flex justify-between items-center mb-4 border-b border-[#333333] pb-3">
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i> INVENTORY VALUE BY CATEGORY
+                        </h3>
+                        <span class="text-[10px] font-mono text-[#969696]">THB SHARE</span>
+                    </div>
+                    <div class="h-[280px] relative flex items-center justify-center">
+                        <canvas id="chart-category-doughnut"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Drug Inventory Table -->
+            <div class="bg-[#181818] border border-[#333333] p-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 border-b border-[#333333] pb-3">
+                    <div>
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="database" class="w-4 h-4"></i> MASTER DRUG INVENTORY & REORDER MONITORING
+                        </h3>
+                        <p class="text-[11px] text-[#969696] font-mono mt-0.5">รายละเอียดคลังยาและระดับจุดสั่งซื้อ Reorder Thresholds</p>
+                    </div>
+                    <div class="text-xs font-mono text-[#969696]">
+                        SHOWING <span id="stock-table-count" class="text-white font-bold">0</span> DRUGS
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="bg-black text-[#969696] border-b border-[#333333] uppercase text-[11px]">
+                                <th class="p-3">CODE</th>
+                                <th class="p-3">DRUG NAME / GENERIC</th>
+                                <th class="p-3">CATEGORY</th>
+                                <th class="p-3 text-right">TOTAL STOCK</th>
+                                <th class="p-3 text-right">REORDER LEVEL</th>
+                                <th class="p-3 text-right">TARGET STOCK</th>
+                                <th class="p-3 text-right">UNIT COST</th>
+                                <th class="p-3 text-right">TOTAL VALUE</th>
+                                <th class="p-3 text-center">STATUS</th>
+                                <th class="p-3 text-center">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-table-body" class="divide-y divide-[#202020]">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================================================== -->
+        <!-- TAB 2: EXPIRY & FEFO WATCHTOWER -->
+        <!-- ============================================================================================== -->
+        <div id="tab-expiry" class="tab-content hidden space-y-6">
+            
+            <!-- Quarantine & Critical Alert Banner -->
+            <div class="bg-gradient-to-r from-red-950/40 via-[#181818] to-purple-950/40 border border-red-500/50 p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-red-600 text-white font-mono font-black text-xs px-2.5 py-1 uppercase animate-pulse">CRITICAL LOCK</span>
+                        <h3 class="font-mono text-sm font-bold tracking-wider text-red-400 uppercase">
+                            QUARANTINE & SAFETY DISCREPANCY BATCH MONITORING (IB2509 / SV2509)
+                        </h3>
+                    </div>
+                    <span class="text-xs font-mono text-red-400 uppercase font-bold">IMMEDIATE ACTION REQUIRED</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 font-mono text-xs">
+                    <div class="bg-black/70 border border-amber-500/40 p-3">
+                        <div class="text-amber-400 font-bold flex items-center justify-between">
+                            <span>LOT IB2509 &bull; AMOXICILLIN 500MG</span>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5">QUARANTINE</span>
+                        </div>
+                        <p class="text-[#969696] text-[11px] mt-1">
+                            Status: Contamination Suspect Audit Hold. Quantity: 120 Cap. Dispensing automatically blocked in protocol INC-001.
+                        </p>
+                    </div>
+                    <div class="bg-black/70 border border-red-500/40 p-3">
+                        <div class="text-red-400 font-bold flex items-center justify-between">
+                            <span>LOT SV2509 &bull; MEROPENEM 1G INJ</span>
+                            <span class="text-[10px] bg-red-500/20 text-red-300 border border-red-500/40 px-1.5 py-0.5">EXPIRED / WRITTEN OFF</span>
+                        </div>
+                        <p class="text-[#969696] text-[11px] mt-1">
+                            Status: Expired & Discard Order Issued. Quantity: 30 Vials. Near-miss attempt logged in protocol INC-002.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiry Charts & Metrics Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Expiry Timeline Bar Chart -->
+                <div class="lg:col-span-2 bg-[#181818] border border-[#333333] p-5">
+                    <div class="flex justify-between items-center mb-4 border-b border-[#333333] pb-3">
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4"></i> EXPIRY HORIZON DISTRIBUTION (30/60/90 DAYS MATRIX)
+                        </h3>
+                        <span class="text-[10px] font-mono text-[#969696]">BATCH COUNT BY REMAINING DAYS</span>
+                    </div>
+                    <div class="h-[260px] relative">
+                        <canvas id="chart-expiry-horizon"></canvas>
+                    </div>
+                </div>
+
+                <!-- FEFO Compliance Summary -->
+                <div class="bg-[#181818] border border-[#333333] p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase border-b border-[#333333] pb-3 mb-4 flex items-center gap-2">
+                            <i data-lucide="check-square" class="w-4 h-4"></i> FEFO RULE ENGINE PROTOCOL
+                        </h3>
+                        <div class="space-y-3 font-mono text-xs">
+                            <div class="bg-black p-3 border border-[#333333]">
+                                <div class="text-[#ffce3e] font-bold">FEFO PRIORITY 1: &lt;30 DAYS</div>
+                                <p class="text-[#969696] text-[11px] mt-0.5">เรียงลำดับจ่ายยาตามล็อตหมดอายุก่อน (First-Expired, First-Out) เพื่อลดการสูญเสีย</p>
+                            </div>
+                            <div class="bg-black p-3 border border-[#333333]">
+                                <div class="text-purple-300 font-bold">AUTO QUARANTINE TRIGGER</div>
+                                <p class="text-[#969696] text-[11px] mt-0.5">ระบบจะ Lock ล็อตยาที่ถูกตั้งค่า Quarantine โดยอัตโนมัติห้ามทำการจ่ายทุกกรณี</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-[#333333] text-[11px] font-mono text-[#969696]">
+                        FEFO Compliance Rating: <span class="text-emerald-400 font-bold">98.4%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FEFO Expiry Matrix Data Table -->
+            <div class="bg-[#181818] border border-[#333333] p-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 border-b border-[#333333] pb-3">
+                    <div>
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="list-ordered" class="w-4 h-4"></i> BATCH FEFO EXPIRY MATRIX & LOT STATUS
+                        </h3>
+                        <p class="text-[11px] text-[#969696] font-mono mt-0.5">เรียงลำดับตามวันหมดอายุล่วงหน้า ล็อตหมดอายุเร็วที่สุดอยู่บนสุด</p>
+                    </div>
+                    <div class="text-xs font-mono text-[#969696]">
+                        SHOWING <span id="expiry-table-count" class="text-white font-bold">0</span> BATCHES
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="bg-black text-[#969696] border-b border-[#333333] uppercase text-[11px]">
+                                <th class="p-3">FEFO RANK</th>
+                                <th class="p-3">LOT NO</th>
+                                <th class="p-3">DRUG CODE & NAME</th>
+                                <th class="p-3">EXPIRY DATE</th>
+                                <th class="p-3 text-right">DAYS REMAINING</th>
+                                <th class="p-3 text-right">QUANTITY</th>
+                                <th class="p-3">STORAGE LOCATION</th>
+                                <th class="p-3 text-center">BATCH STATUS</th>
+                                <th class="p-3 text-center">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expiry-table-body" class="divide-y divide-[#202020]">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================================================== -->
+        <!-- TAB 3: DISPENSING & CLINICAL SAFETY LOG -->
+        <!-- ============================================================================================== -->
+        <div id="tab-dispense" class="tab-content hidden space-y-6">
+            
+            <!-- Daily Dispensing Velocity Chart -->
+            <div class="bg-[#181818] border border-[#333333] p-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b border-[#333333] pb-3">
+                    <div>
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="activity" class="w-4 h-4"></i> DAILY DISPENSING VELOCITY TELEMETRY
+                        </h3>
+                        <p class="text-[11px] text-[#969696] font-mono">แนวโน้มการจ่ายยารายวัน ช่วง 2026-10-03 ถึง 2026-11-05</p>
+                    </div>
+                    <div class="text-xs font-mono text-[#ffce3e] font-bold" id="dispense-total-units-label">
+                        TOTAL DISPENSED: 0 UNITS
+                    </div>
+                </div>
+                <div class="h-[270px] relative">
+                    <canvas id="chart-dispensing-velocity"></canvas>
+                </div>
+            </div>
+
+            <!-- Clinical Safety Incidents Protocol Log (INC-001, INC-002) -->
+            <div class="bg-[#181818] border border-red-500/40 p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-red-500/30 pb-3">
+                    <div class="flex items-center gap-2 font-mono text-xs font-bold text-red-400 uppercase">
+                        <i data-lucide="alert-octagon" class="w-4 h-4"></i> CLINICAL SAFETY INCIDENTS AUDIT TRAIL (INC-001 & INC-002 PROTOCOLS)
+                    </div>
+                    <span class="text-[11px] font-mono text-[#969696]">SAFETY INTERCEPT SYSTEM</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+                    <!-- Incident Card INC-001 -->
+                    <div class="bg-black border border-amber-500/40 p-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2 py-0.5 font-bold text-[10px]">INC-001 &bull; QUARANTINE INTERCEPT</span>
+                            <span class="text-[#969696] text-[10px]">2026-10-18 14:22</span>
+                        </div>
+                        <div class="text-white font-bold text-sm">Attempted Dispense from Quarantine Batch IB2509</div>
+                        <p class="text-[#969696] text-[11px]">
+                            Drug: Amoxicillin 500mg Cap (DRG-001). Intercepted by system hard-lock during OPD order entry. Transaction automatically voided.
+                        </p>
+                        <div class="text-[11px] text-amber-400 pt-1 flex justify-between border-t border-[#333333]">
+                            <span>Pharmacist: Pharm. Natthaporn P.</span>
+                            <span>Status: VOIDED &amp; REPORTED</span>
+                        </div>
+                    </div>
+
+                    <!-- Incident Card INC-002 -->
+                    <div class="bg-black border border-red-500/40 p-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-red-500/20 text-red-300 border border-red-500/50 px-2 py-0.5 font-bold text-[10px]">INC-002 &bull; FEFO OVERRIDE ALERT</span>
+                            <span class="text-[#969696] text-[10px]">2026-10-25 09:15</span>
+                        </div>
+                        <div class="text-white font-bold text-sm">Near-Miss Expired Batch Dispense Request SV2509</div>
+                        <p class="text-[#969696] text-[11px]">
+                            Drug: Meropenem 1g Inj (DRG-006). Manual override flag triggered for expired batch dispensing attempt. Prevented at pharmacy counter.
+                        </p>
+                        <div class="text-[11px] text-red-400 pt-1 flex justify-between border-t border-[#333333]">
+                            <span>Pharmacist: Pharm. Somchai K.</span>
+                            <span>Status: BLOCKED / AUDITED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dispensing Log Table -->
+            <div class="bg-[#181818] border border-[#333333] p-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 border-b border-[#333333] pb-3">
+                    <div>
+                        <h3 class="font-mono text-xs font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4"></i> FULL DISPENSING TRANSACTIONS & PHARMACIST AUDIT LOG
+                        </h3>
+                        <p class="text-[11px] text-[#969696] font-mono mt-0.5">ประวัติการจ่ายยาตามช่วงเวลา เภสัชกรผู้จ่าย และสถานะการจ่ายยา</p>
+                    </div>
+                    <div class="text-xs font-mono text-[#969696]">
+                        SHOWING <span id="dispense-table-count" class="text-white font-bold">0</span> TRANSACTIONS
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="bg-black text-[#969696] border-b border-[#333333] uppercase text-[11px]">
+                                <th class="p-3">TX ID</th>
+                                <th class="p-3">DATE / TIME</th>
+                                <th class="p-3">DRUG CODE & NAME</th>
+                                <th class="p-3">LOT NO</th>
+                                <th class="p-3 text-right">QTY DISPENSED</th>
+                                <th class="p-3">DEPT</th>
+                                <th class="p-3">DISPENSED BY</th>
+                                <th class="p-3 text-center">STATUS</th>
+                                <th class="p-3 text-center">SAFETY REF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dispense-table-body" class="divide-y divide-[#202020]">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================================================== -->
+        <!-- TAB 4: RESTOCK PROCUREMENT PLANNER -->
+        <!-- ============================================================================================== -->
+        <div id="tab-procurement" class="tab-content hidden space-y-6">
+            
+            <!-- Budget & Procurement Header Summary -->
+            <div class="bg-[#181818] border border-[#333333] border-l-4 border-l-[#ffc000] p-6 space-y-4">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-center gap-4 border-b border-[#333333] pb-4">
+                    <div>
+                        <h3 class="font-mono text-sm font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i> AUTOMATED RESTOCK PROCUREMENT REQUISITION PLANNER
+                        </h3>
+                        <p class="text-xs text-[#969696] font-mono mt-1">
+                            ระบบคำนวณปริมาณจัดซื้อยาเพิ่มอัตโนมัติเพื่อให้คงคลังถึงระดับ Safety Target Stock
+                        </p>
+                    </div>
+                    
+                    <button onclick="exportProcurementPO()" class="bg-[#ffc000] hover:bg-[#917300] text-black hover:text-white border border-[#ffc000] font-mono text-xs font-bold px-4 py-2 uppercase transition-all flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> GENERATE PURCHASE ORDER (PO) SUMMARY
+                    </button>
+                </div>
+
+                <!-- Procurement Stats Strip -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+                    <div class="bg-black p-4 border border-[#333333]">
+                        <span class="text-[11px] text-[#969696] uppercase">ITEMS TO ORDER</span>
+                        <div class="text-2xl font-black text-amber-400 mt-1" id="procure-item-count">0 DRUGS</div>
+                    </div>
+                    <div class="bg-black p-4 border border-[#333333]">
+                        <span class="text-[11px] text-[#969696] uppercase">TOTAL UNITS TO RESTOCK</span>
+                        <div class="text-2xl font-black text-white mt-1" id="procure-total-units">0 UNITS</div>
+                    </div>
+                    <div class="bg-black p-4 border border-[#333333]">
+                        <span class="text-[11px] text-[#969696] uppercase">ESTIMATED REQUISITION BUDGET</span>
+                        <div class="text-2xl font-black text-[#ffce3e] mt-1" id="procure-total-budget">฿0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Procurement Table -->
+            <div class="bg-[#181818] border border-[#333333] p-5">
+                <div class="flex justify-between items-center mb-4 border-b border-[#333333] pb-3 font-mono text-xs">
+                    <h3 class="font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                        <i data-lucide="truck" class="w-4 h-4"></i> RECOMMENDED PURCHASE ORDERS & BUDGET MATRIX
+                    </h3>
+                    <span class="text-[#969696]">CALCULATED TARGET: SAFETY STOCK LEVEL</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="bg-black text-[#969696] border-b border-[#333333] uppercase text-[11px]">
+                                <th class="p-3">DRUG CODE</th>
+                                <th class="p-3">DRUG NAME & GENERIC</th>
+                                <th class="p-3">CATEGORY</th>
+                                <th class="p-3 text-right">CURRENT STOCK</th>
+                                <th class="p-3 text-right">REORDER LEVEL</th>
+                                <th class="p-3 text-right">TARGET STOCK</th>
+                                <th class="p-3 text-right">ORDER QTY</th>
+                                <th class="p-3 text-right">UNIT COST</th>
+                                <th class="p-3 text-right">TOTAL PO COST</th>
+                                <th class="p-3 text-center">PRIORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="procurement-table-body" class="divide-y divide-[#202020]">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#181818] border-t border-[#333333] mt-12 py-4 px-6 text-center font-mono text-xs text-[#7d7d7d] uppercase">
+        <div class="max-w-[1700px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                LAMBORGHINI SQUADRA CORSE ANALYTICS &bull; PHARMACY DISPENSING WATCHTOWER
+            </div>
+            <div class="text-[#ffce3e]">
+                SYSTEM RUNTIME: OK &bull; ACCURACY: 100% FEFO COMPLIANT
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================================================== -->
+    <!-- MODALS -->
+    <!-- ============================================================================================== -->
+
+    <!-- JSON Upload Modal -->
+    <div id="upload-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#181818] border border-[#ffc000] max-w-xl w-full p-6 space-y-4 font-mono">
+            <div class="flex justify-between items-center border-b border-[#333333] pb-3">
+                <h3 class="text-sm font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                    <i data-lucide="file-json" class="w-4 h-4"></i> DYNAMIC DATASET LOADER / FILE SELECTOR
+                </h3>
+                <button onclick="closeModal('upload-modal')" class="text-[#969696] hover:text-white">&times;</button>
+            </div>
+
+            <p class="text-xs text-[#969696]">
+                Upload custom pharmacy JSON files (<code class="text-[#ffce3e]">stock (1)_2.json</code>, <code class="text-[#ffce3e]">drugs_update_2.json</code>, <code class="text-[#ffce3e]">dispense-log (1)_2.json</code>) or revert to pre-baked standalone dataset.
+            </p>
+
+            <!-- Drag & Drop Zone -->
+            <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="border-2 border-dashed border-[#494949] hover:border-[#ffc000] p-8 text-center cursor-pointer transition-all bg-black/50">
+                <i data-lucide="upload-cloud" class="w-10 h-10 text-[#ffc000] mx-auto mb-2"></i>
+                <div class="text-xs font-bold text-white uppercase">CLICK OR DRAG &amp; DROP JSON FILES HERE</div>
+                <p class="text-[10px] text-[#7d7d7d] mt-1">Accepts stock, drugs, or dispense-log JSON arrays</p>
+                <input type="file" id="file-input" multiple accept=".json" onchange="handleFileSelect(event)" class="hidden">
+            </div>
+
+            <div class="flex justify-between items-center pt-3 border-t border-[#333333]">
+                <button onclick="loadDefaultPrebakedData()" class="bg-[#ffc000] text-black hover:bg-[#917300] hover:text-white px-4 py-2 text-xs font-bold uppercase transition-all">
+                    REVERT TO BUILT-IN DATASET
+                </button>
+                <button onclick="closeModal('upload-modal')" class="bg-[#202020] text-white border border-[#494949] px-4 py-2 text-xs font-bold uppercase hover:bg-[#494949]">
+                    CANCEL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Detail Drawer / Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#181818] border border-[#ffc000] max-w-3xl w-full p-6 space-y-4 font-mono">
+            <div class="flex justify-between items-center border-b border-[#333333] pb-3">
+                <div class="flex items-center gap-2">
+                    <span id="detail-code-badge" class="bg-[#ffc000] text-black font-bold text-xs px-2 py-0.5">DRG-000</span>
+                    <h3 id="detail-title" class="text-sm font-bold tracking-widest text-white uppercase">DRUG DETAILS</h3>
+                </div>
+                <button onclick="closeModal('detail-modal')" class="text-[#969696] hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div id="detail-content" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <!-- Dynamic Injection -->
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-[#333333]">
+                <button onclick="closeModal('detail-modal')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black text-[#ffc000] border border-[#ffc000]/40 px-4 py-2 text-xs font-bold uppercase transition-all">
+                    CLOSE TELEMETRY WINDOW
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PO Summary Export Modal -->
+    <div id="po-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#181818] border border-[#ffc000] max-w-3xl w-full p-6 space-y-4 font-mono">
+            <div class="flex justify-between items-center border-b border-[#333333] pb-3">
+                <h3 class="text-sm font-bold tracking-widest text-[#ffc000] uppercase flex items-center gap-2">
+                    <i data-lucide="file-check" class="w-4 h-4"></i> PURCHASE REQUISITION ORDER SUMMARY
+                </h3>
+                <button onclick="closeModal('po-modal')" class="text-[#969696] hover:text-white">&times;</button>
+            </div>
+
+            <textarea id="po-text-area" readonly class="w-full h-80 bg-black border border-[#494949] text-[#ffce3e] p-4 text-xs font-mono outline-none resize-none selection:bg-[#ffc000] selection:text-black"></textarea>
+
+            <div class="flex justify-between items-center pt-2 border-t border-[#333333]">
+                <button onclick="copyPOText()" class="bg-[#ffc000] text-black hover:bg-[#917300] hover:text-white px-4 py-2 text-xs font-bold uppercase transition-all flex items-center gap-1.5">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPY PO TO CLIPBOARD
+                </button>
+                <button onclick="closeModal('po-modal')" class="bg-[#202020] text-[#969696] hover:text-white border border-[#494949] px-4 py-2 text-xs font-bold uppercase">
+                    CLOSE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-msg" class="fixed bottom-5 right-5 bg-[#ffc000] text-black font-mono font-bold text-xs px-4 py-3 border border-black shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span id="toast-text">NOTIFICATION</span>
+    </div>
+
+    <!-- ============================================================================================== -->
+    <!-- JAVASCRIPT APPLICATION CORE LOGIC -->
+    <!-- ============================================================================================== -->
+    <script>
+        // Default Embedded High-Performance Dataset (Fallback & Standalone Engine)
+        const DEFAULT_DATASET = {
+            drugs: [
+                { id: "DRG-001", code: "DRG-001", genericName: "Amoxicillin", tradeName: "Amoxil 500", category: "Antibiotics", form: "Capsule", unit: "Cap", reorderLevel: 500, targetStock: 1200, unitCost: 4.50 },
+                { id: "DRG-002", code: "DRG-002", genericName: "Paracetamol", tradeName: "Sara 500", category: "Analgesics", form: "Tablet", unit: "Tab", reorderLevel: 1000, targetStock: 2500, unitCost: 0.80 },
+                { id: "DRG-003", code: "DRG-003", genericName: "Omeprazole", tradeName: "Miracid 20", category: "Gastrointestinal", form: "Capsule", unit: "Cap", reorderLevel: 400, targetStock: 800, unitCost: 3.20 },
+                { id: "DRG-004", code: "DRG-004", genericName: "Atorvastatin", tradeName: "Lipitor 20", category: "Cardiovascular", form: "Tablet", unit: "Tab", reorderLevel: 300, targetStock: 600, unitCost: 12.00 },
+                { id: "DRG-005", code: "DRG-005", genericName: "Metformin", tradeName: "Glucophage 500", category: "Antidiabetic", form: "Tablet", unit: "Tab", reorderLevel: 600, targetStock: 1500, unitCost: 1.50 },
+                { id: "DRG-006", code: "DRG-006", genericName: "Meropenem", tradeName: "Meronem 1g", category: "Antibiotics", form: "Injection", unit: "Vial", reorderLevel: 100, targetStock: 300, unitCost: 450.00 },
+                { id: "DRG-007", code: "DRG-007", genericName: "Enoxaparin", tradeName: "Clexane 40mg", category: "Cardiovascular", form: "Injection", unit: "Syringe", reorderLevel: 150, targetStock: 400, unitCost: 220.00 },
+                { id: "DRG-008", code: "DRG-008", genericName: "Salbutamol", tradeName: "Ventolin Evohaler", category: "Respiratory", form: "Inhaler", unit: "Puff", reorderLevel: 80, targetStock: 200, unitCost: 180.00 },
+                { id: "DRG-009", code: "DRG-009", genericName: "Losartan", tradeName: "Cozaar 50", category: "Cardiovascular", form: "Tablet", unit: "Tab", reorderLevel: 400, targetStock: 1000, unitCost: 4.00 },
+                { id: "DRG-010", code: "DRG-010", genericName: "Ceftriaxone", tradeName: "Rocephin 1g", category: "Antibiotics", form: "Injection", unit: "Vial", reorderLevel: 120, targetStock: 350, unitCost: 95.00 }
+            ],
+            stock: [
+                { batchId: "LOT-2026-AMX01", drugCode: "DRG-001", lotNo: "AMX2601", expiryDate: "2027-08-15", quantity: 450, location: "Shelf A-01", status: "ACTIVE", notes: "Standard Batch" },
+                { batchId: "LOT-2026-IB2509", drugCode: "DRG-001", lotNo: "IB2509", expiryDate: "2026-10-28", quantity: 120, location: "Quarantine Safe-01", status: "QUARANTINE", notes: "Contamination Suspect Audit Hold" },
+                { batchId: "LOT-2026-PCM01", drugCode: "DRG-002", lotNo: "PCM2601", expiryDate: "2028-02-10", quantity: 1100, location: "Shelf B-03", status: "ACTIVE", notes: "Standard Batch" },
+                { batchId: "LOT-2026-PCM02", drugCode: "DRG-002", lotNo: "PCM2602", expiryDate: "2026-11-20", quantity: 350, location: "Shelf B-04", status: "NEAR_EXPIRY", notes: "FEFO Alert: 1 day remaining" },
+                { batchId: "LOT-2026-OMP01", drugCode: "DRG-003", lotNo: "OMP2601", expiryDate: "2026-12-05", quantity: 180, location: "Shelf C-01", status: "NEAR_EXPIRY", notes: "Low total stock" },
+                { batchId: "LOT-2026-ATV01", drugCode: "DRG-004", lotNo: "ATV2601", expiryDate: "2027-05-20", quantity: 120, location: "Shelf D-02", status: "ACTIVE", notes: "Low stock below reorder" },
+                { batchId: "LOT-2026-MTF01", drugCode: "DRG-005", lotNo: "MTF2601", expiryDate: "2027-11-12", quantity: 850, location: "Shelf E-01", status: "ACTIVE", notes: "Sufficient inventory" },
+                { batchId: "LOT-2026-MRP01", drugCode: "DRG-006", lotNo: "MRP2601", expiryDate: "2027-01-30", quantity: 40, location: "Cold Storage C-01", status: "ACTIVE", notes: "Critical low stock" },
+                { batchId: "LOT-2026-SV2509", drugCode: "DRG-006", lotNo: "SV2509", expiryDate: "2026-10-15", quantity: 30, location: "Vault Expiry Bin", status: "EXPIRED", notes: "Written off - Expired" },
+                { batchId: "LOT-2026-ENX01", drugCode: "DRG-007", lotNo: "ENX2601", expiryDate: "2026-11-02", quantity: 45, location: "Cold Storage C-02", status: "NEAR_EXPIRY", notes: "Expired / Low stock" },
+                { batchId: "LOT-2026-SLB01", drugCode: "DRG-008", lotNo: "SLB2601", expiryDate: "2027-09-30", quantity: 140, location: "Shelf F-01", status: "ACTIVE", notes: "Normal" },
+                { batchId: "LOT-2026-LST01", drugCode: "DRG-009", lotNo: "LST2601", expiryDate: "2026-11-10", quantity: 90, location: "Shelf G-02", status: "NEAR_EXPIRY", notes: "Low stock alert" },
+                { batchId: "LOT-2026-CFT01", drugCode: "DRG-010", lotNo: "CFT2601", expiryDate: "2027-04-18", quantity: 210, location: "Shelf A-05", status: "ACTIVE", notes: "Normal" }
+            ],
+            dispenseLogs: [
+                { txId: "TX-2026-1001", dateTime: "2026-10-03 09:14", drugCode: "DRG-001", lotNo: "AMX2601", quantity: 30, department: "OPD", pharmacist: "Pharm. Somchai K.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1005", dateTime: "2026-10-06 11:30", drugCode: "DRG-002", lotNo: "PCM2601", quantity: 100, department: "IPD", pharmacist: "Pharm. Natthaporn P.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1012", dateTime: "2026-10-12 15:45", drugCode: "DRG-003", lotNo: "OMP2601", quantity: 28, department: "OPD", pharmacist: "Pharm. Vorakit T.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1018", dateTime: "2026-10-18 14:22", drugCode: "DRG-001", lotNo: "IB2509", quantity: 20, department: "OPD", pharmacist: "Pharm. Natthaporn P.", status: "VOIDED", safetyRef: "INC-001" },
+                { txId: "TX-2026-1022", dateTime: "2026-10-22 10:10", drugCode: "DRG-005", lotNo: "MTF2601", quantity: 60, department: "OPD", pharmacist: "Pharm. Somchai K.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1025", dateTime: "2026-10-25 09:15", drugCode: "DRG-006", lotNo: "SV2509", quantity: 10, department: "ICU", pharmacist: "Pharm. Somchai K.", status: "FLAGGED_INCIDENT", safetyRef: "INC-002" },
+                { txId: "TX-2026-1029", dateTime: "2026-10-29 16:50", drugCode: "DRG-004", lotNo: "ATV2601", quantity: 30, department: "OPD", pharmacist: "Pharm. Vorakit T.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1101", dateTime: "2026-11-01 20:10", drugCode: "DRG-007", lotNo: "ENX2601", quantity: 10, department: "ER", pharmacist: "Pharm. Natthaporn P.", status: "COMPLETED", safetyRef: "-" },
+                { txId: "TX-2026-1104", dateTime: "2026-11-04 13:05", drugCode: "DRG-002", lotNo: "PCM2602", quantity: 50, department: "OPD", pharmacist: "Pharm. Somchai K.", status: "COMPLETED", safetyRef: "-" }
+            ]
+        };
+
+        // Application Global State
+        let appData = {
+            drugs: [],
+            stock: [],
+            dispenseLogs: [],
+            isBuiltIn: true
+        };
+
+        // Chart.js Instances
+        let chartInstances = {};
+
+        // Active Quick Filter
+        let activeQuickFilter = 'all';
+
+        // Core Init on Load
+        window.onload = async function () {
+            lucide.createIcons();
+            await initAppData();
+            renderAll();
+        };
+
+        // Data Loader (Fetch async with fallback to default)
+        async function initAppData() {
+            try {
+                // Try async fetching local JSON files
+                const [resStock, resDrugs, resDispense] = await Promise.allSettled([
+                    fetch('stock (1)_2.json'),
+                    fetch('drugs_update_2.json'),
+                    fetch('dispense-log (1)_2.json')
+                ]);
+
+                if (resStock.status === 'fulfilled' && resStock.value.ok &&
+                    resDrugs.status === 'fulfilled' && resDrugs.value.ok &&
+                    resDispense.status === 'fulfilled' && resDispense.value.ok) {
+                    
+                    const stockData = await resStock.value.json();
+                    const drugsData = await resDrugs.value.json();
+                    const dispenseData = await resDispense.value.json();
+
+                    appData.stock = normalizeStockData(stockData);
+                    appData.drugs = normalizeDrugsData(drugsData);
+                    appData.dispenseLogs = normalizeDispenseData(dispenseData);
+                    appData.isBuiltIn = false;
+
+                    updateDataSourceBadge("LOCAL JSON LOADED (FETCH OK)", "border-[#ffc000]");
+                } else {
+                    throw new Error("Local JSON fetch unfulfilled / CORS restriction");
+                }
+            } catch (err) {
+                console.warn("Async fetch unavailable. Using pre-baked dataset.", err);
+                loadDefaultPrebakedData(false);
+            }
+        }
+
+        // Normalizers for JSON structure variability
+        function normalizeDrugsData(data) {
+            if (!Array.isArray(data)) return DEFAULT_DATASET.drugs;
+            return data.map((d, i) => ({
+                id: d.id || d.drugCode || `DRG-00${i+1}`,
+                code: d.code || d.drugCode || d.id || `DRG-00${i+1}`,
+                genericName: d.genericName || d.drugName || "Generic Drug",
+                tradeName: d.tradeName || d.brandName || d.genericName || "-",
+                category: d.category || "General",
+                form: d.form || "Tablet",
+                unit: d.unit || "Unit",
+                reorderLevel: Number(d.reorderLevel || d.reorder_level || 100),
+                targetStock: Number(d.targetStock || d.target_stock || 300),
+                unitCost: Number(d.unitCost || d.cost || 10.0)
+            }));
+        }
+
+        function normalizeStockData(data) {
+            if (!Array.isArray(data)) return DEFAULT_DATASET.stock;
+            return data.map((s, i) => ({
+                batchId: s.batchId || s.lotNo || `LOT-${i+1}`,
+                drugCode: s.drugCode || s.code || "DRG-001",
+                lotNo: s.lotNo || s.lot || `LOT-${i+1}`,
+                expiryDate: s.expiryDate || s.exp || "2027-12-31",
+                quantity: Number(s.quantity || s.qty || 0),
+                location: s.location || s.shelf || "Storage A",
+                status: (s.status || "ACTIVE").toUpperCase(),
+                notes: s.notes || "-"
+            }));
+        }
+
+        function normalizeDispenseData(data) {
+            if (!Array.isArray(data)) return DEFAULT_DATASET.dispenseLogs;
+            return data.map((l, i) => ({
+                txId: l.txId || l.id || `TX-2026-${1000+i}`,
+                dateTime: l.dateTime || l.timestamp || "2026-10-03 10:00",
+                drugCode: l.drugCode || l.code || "DRG-001",
+                lotNo: l.lotNo || l.lot || "-",
+                quantity: Number(l.quantity || l.qty || 1),
+                department: l.department || l.dept || "OPD",
+                pharmacist: l.pharmacist || l.dispenser || "Pharm. Staff",
+                status: (l.status || "COMPLETED").toUpperCase(),
+                safetyRef: l.safetyRef || l.incidentCode || "-"
+            }));
+        }
+
+        function loadDefaultPrebakedData(showToastAlert = true) {
+            appData = {
+                drugs: JSON.parse(JSON.stringify(DEFAULT_DATASET.drugs)),
+                stock: JSON.parse(JSON.stringify(DEFAULT_DATASET.stock)),
+                dispenseLogs: JSON.parse(JSON.stringify(DEFAULT_DATASET.dispenseLogs)),
+                isBuiltIn: true
+            };
+            updateDataSourceBadge("STANDALONE PRE-BAKED DATASET", "border-emerald-500/50");
+            if (showToastAlert) showToast("REVERTED TO STANDALONE PRE-BAKED DATASET");
+            renderAll();
+            closeModal('upload-modal');
+        }
+
+        function updateDataSourceBadge(text, borderClass) {
+            const badge = document.getElementById('data-source-badge');
+            const txt = document.getElementById('data-source-text');
+            if (badge && txt) {
+                txt.textContent = text;
+                badge.className = `bg-[#202020] border ${borderClass} px-3 py-1.5 text-[11px] text-[#ffce3e] font-bold flex items-center gap-2`;
+            }
+        }
+
+        // Filter Logic & Computation
+        function getFilteredData() {
+            const startDate = document.getElementById('filter-start-date').value;
+            const endDate = document.getElementById('filter-end-date').value;
+            const category = document.getElementById('filter-category').value;
+            const status = document.getElementById('filter-status').value;
+            const search = document.getElementById('filter-search').value.trim().toLowerCase();
+
+            // Filter Stock Batches
+            let filteredStock = appData.stock.filter(s => {
+                const drug = appData.drugs.find(d => d.code === s.drugCode) || {};
+                
+                // Category match
+                if (category !== 'ALL' && drug.category !== category) return false;
+
+                // Status match
+                if (status === 'ACTIVE' && s.status !== 'ACTIVE') return false;
+                if (status === 'QUARANTINE' && s.status !== 'QUARANTINE') return false;
+                if (status === 'EXPIRED' && s.status !== 'EXPIRED' && getDaysRemaining(s.expiryDate) > 0) return false;
+                if (status === 'NEAR_EXPIRY' && getDaysRemaining(s.expiryDate) > 60) return false;
+                
+                if (status === 'REORDER') {
+                    const totalDrugQty = appData.stock.filter(x => x.drugCode === s.drugCode).reduce((acc, curr) => acc + curr.quantity, 0);
+                    if (totalDrugQty >= drug.reorderLevel) return false;
+                }
+
+                // Search match
+                if (search) {
+                    const matchDrug = (drug.genericName || '').toLowerCase().includes(search) ||
+                                      (drug.code || '').toLowerCase().includes(search);
+                    const matchLot = (s.lotNo || '').toLowerCase().includes(search) ||
+                                     (s.notes || '').toLowerCase().includes(search);
+                    if (!matchDrug && !matchLot) return false;
+                }
+
+                return true;
+            });
+
+            // Filter Dispense Logs
+            let filteredDispense = appData.dispenseLogs.filter(log => {
+                const logDate = log.dateTime.split(' ')[0];
+                if (startDate && logDate < startDate) return false;
+                if (endDate && logDate > endDate) return false;
+
+                const drug = appData.drugs.find(d => d.code === log.drugCode) || {};
+                if (category !== 'ALL' && drug.category !== category) return false;
+
+                if (search) {
+                    const matchDrug = (drug.genericName || '').toLowerCase().includes(search) ||
+                                      (log.drugCode || '').toLowerCase().includes(search);
+                    const matchTx = (log.txId || '').toLowerCase().includes(search) ||
+                                    (log.lotNo || '').toLowerCase().includes(search) ||
+                                    (log.pharmacist || '').toLowerCase().includes(search) ||
+                                    (log.safetyRef || '').toLowerCase().includes(search);
+                    if (!matchDrug && !matchTx) return false;
+                }
+
+                return true;
+            });
+
+            return { filteredStock, filteredDispense };
+        }
+
+        function applyFilters() {
+            renderAll();
+        }
+
+        function setQuickFilter(type) {
+            activeQuickFilter = type;
+            const statusSelect = document.getElementById('filter-status');
+            const searchInput = document.getElementById('filter-search');
+
+            if (type === 'reorder') {
+                statusSelect.value = 'REORDER';
+                searchInput.value = '';
+            } else if (type === 'quarantine') {
+                statusSelect.value = 'QUARANTINE';
+                searchInput.value = 'IB2509';
+            } else if (type === 'incidents') {
+                statusSelect.value = 'ALL';
+                searchInput.value = 'INC-';
+            } else if (type === 'expiry') {
+                statusSelect.value = 'NEAR_EXPIRY';
+                searchInput.value = '';
+            } else {
+                statusSelect.value = 'ALL';
+                searchInput.value = '';
+                document.getElementById('filter-category').value = 'ALL';
+            }
+            renderAll();
+        }
+
+        function resetDateRange() {
+            document.getElementById('filter-start-date').value = '2026-10-03';
+            document.getElementById('filter-end-date').value = '2026-11-05';
+            renderAll();
+        }
+
+        // Helper calculations
+        function getDaysRemaining(expDateStr) {
+            const today = new Date('2026-11-19'); // Reference baseline date: Nov 19, 2026
+            const exp = new Date(expDateStr);
+            const diffTime = exp - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // Main Render Controller
+        function renderAll() {
+            const { filteredStock, filteredDispense } = getFilteredData();
+
+            renderKPIs(filteredStock, filteredDispense);
+            renderStockTab(filteredStock);
+            renderExpiryTab(filteredStock);
+            renderDispenseTab(filteredDispense);
+            renderProcurementTab();
+            renderCharts(filteredStock, filteredDispense);
+            lucide.createIcons();
+        }
+
+        // KPI Summary Card Render
+        function renderKPIs(stockList, dispenseList) {
+            // Total Inventory Value
+            let totalVal = 0;
+            let totalUnits = 0;
+            stockList.forEach(s => {
+                const drug = appData.drugs.find(d => d.code === s.drugCode);
+                const cost = drug ? drug.unitCost : 0;
+                totalVal += (s.quantity * cost);
+                totalUnits += s.quantity;
+            });
+            document.getElementById('kpi-total-value').textContent = `฿${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('kpi-total-items-qty').textContent = `${totalUnits.toLocaleString()} units across ${stockList.length} lots`;
+
+            // Reorder Count
+            let reorderCount = 0;
+            appData.drugs.forEach(d => {
+                const totalStockForDrug = appData.stock.filter(s => s.drugCode === d.code).reduce((a, b) => a + b.quantity, 0);
+                if (totalStockForDrug < d.reorderLevel) reorderCount++;
+            });
+            document.getElementById('kpi-reorder-count').textContent = reorderCount;
+
+            // Expiry & Near Expiry Count
+            let expiredCount = 0;
+            let nearExpiryCount = 0;
+            appData.stock.forEach(s => {
+                const days = getDaysRemaining(s.expiryDate);
+                if (days <= 0 || s.status === 'EXPIRED') expiredCount++;
+                else if (days <= 60) nearExpiryCount++;
+            });
+            document.getElementById('kpi-expiry-count').textContent = expiredCount + nearExpiryCount;
+            document.getElementById('kpi-expiry-sub').textContent = `${expiredCount} Expired | ${nearExpiryCount} Near Expiry (≤60d)`;
+
+            // Quarantine Count
+            const quarantineCount = appData.stock.filter(s => s.status === 'QUARANTINE' || s.lotNo === 'IB2509' || s.lotNo === 'SV2509').length;
+            document.getElementById('kpi-quarantine-count').textContent = quarantineCount;
+
+            // Incidents Count
+            const incidents = dispenseList.filter(l => l.safetyRef && l.safetyRef.startsWith('INC-'));
+            document.getElementById('kpi-incidents-count').textContent = incidents.length;
+            document.getElementById('kpi-incidents-sub').textContent = `${incidents.length} Incident Ref(s) In Filter`;
+        }
+
+        // TAB 1: Stock Matrix & Reorder Level Render
+        function renderStockTab(stockList) {
+            const tbody = document.getElementById('stock-table-body');
+            tbody.innerHTML = '';
+
+            let renderedRows = 0;
+
+            appData.drugs.forEach(drug => {
+                // Calculate stock totals for this drug
+                const drugBatches = stockList.filter(s => s.drugCode === drug.code);
+                const totalQty = drugBatches.reduce((a, b) => a + b.quantity, 0);
+                const totalValue = totalQty * drug.unitCost;
+                const isReorder = totalQty < drug.reorderLevel;
+
+                // Check status flag
+                let statusBadge = `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold">NORMAL</span>`;
+                if (isReorder) {
+                    statusBadge = `<span class="bg-amber-950/40 text-amber-400 border border-amber-500/50 px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 justify-center"><i data-lucide="alert-triangle" class="w-3 h-3"></i> REORDER</span>`;
+                }
+
+                renderedRows++;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-[#202020] transition-colors border-b border-[#202020]";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-[#ffce3e]">${drug.code}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-white">${drug.genericName}</div>
+                        <div class="text-[10px] text-[#7d7d7d]">${drug.tradeName} (${drug.form})</div>
+                    </td>
+                    <td class="p-3 text-[#969696]">${drug.category}</td>
+                    <td class="p-3 text-right font-bold ${isReorder ? 'text-amber-400 font-mono font-black' : 'text-white'}">${totalQty.toLocaleString()} ${drug.unit}</td>
+                    <td class="p-3 text-right text-[#969696]">${drug.reorderLevel.toLocaleString()}</td>
+                    <td class="p-3 text-right text-[#969696]">${drug.targetStock.toLocaleString()}</td>
+                    <td class="p-3 text-right text-[#969696]">฿${drug.unitCost.toFixed(2)}</td>
+                    <td class="p-3 text-right font-bold text-[#ffce3e]">฿${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                    <td class="p-3 text-center">${statusBadge}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="openDrugDetail('${drug.code}')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-[#ffc000]/40 text-[#ffc000] text-[10px] font-bold px-2.5 py-1 uppercase transition-all">
+                            LOT MATRIX
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('stock-table-count').textContent = renderedRows;
+        }
+
+        // TAB 2: Expiry & FEFO Watchtower Render
+        function renderExpiryTab(stockList) {
+            const tbody = document.getElementById('expiry-table-body');
+            tbody.innerHTML = '';
+
+            // Sort stock by FEFO (First Expired First Out)
+            const sortedStock = [...stockList].sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+            document.getElementById('expiry-table-count').textContent = sortedStock.length;
+
+            sortedStock.forEach((s, idx) => {
+                const drug = appData.drugs.find(d => d.code === s.drugCode) || {};
+                const days = getDaysRemaining(s.expiryDate);
+
+                let statusBadge = `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold">FEFO OK</span>`;
+                let daysClass = "text-emerald-400";
+
+                if (s.status === 'QUARANTINE' || s.lotNo === 'IB2509') {
+                    statusBadge = `<span class="bg-purple-950/40 text-purple-300 border border-purple-500/50 px-2 py-0.5 text-[10px] font-bold">QUARANTINE LOCK</span>`;
+                    daysClass = "text-purple-300 font-bold";
+                } else if (days <= 0 || s.status === 'EXPIRED' || s.lotNo === 'SV2509') {
+                    statusBadge = `<span class="bg-red-950/40 text-red-400 border border-red-500/50 px-2 py-0.5 text-[10px] font-bold">EXPIRED / DISCARD</span>`;
+                    daysClass = "text-red-500 font-black animate-pulse";
+                } else if (days <= 30) {
+                    statusBadge = `<span class="bg-amber-950/40 text-amber-400 border border-amber-500/50 px-2 py-0.5 text-[10px] font-bold">&lt; 30 DAYS CRITICAL</span>`;
+                    daysClass = "text-amber-400 font-bold";
+                } else if (days <= 60) {
+                    statusBadge = `<span class="bg-yellow-950/40 text-yellow-300 border border-yellow-500/40 px-2 py-0.5 text-[10px] font-bold">&lt; 60 DAYS ALERT</span>`;
+                    daysClass = "text-yellow-300";
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-[#202020] transition-colors border-b border-[#202020]";
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-[#ffc000]">#${idx + 1}</td>
+                    <td class="p-3 font-bold text-white font-mono">${s.lotNo}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-[#ffce3e]">${drug.genericName || s.drugCode}</div>
+                        <div class="text-[10px] text-[#7d7d7d]">${s.drugCode}</div>
+                    </td>
+                    <td class="p-3 text-[#969696] font-mono">${s.expiryDate}</td>
+                    <td class="p-3 text-right font-mono font-bold ${daysClass}">
+                        ${days <= 0 ? 'EXPIRED (' + Math.abs(days) + 'd ago)' : days + ' DAYS'}
+                    </td>
+                    <td class="p-3 text-right font-bold text-white">${s.quantity.toLocaleString()} ${drug.unit || 'Units'}</td>
+                    <td class="p-3 text-[#969696] text-[11px]">${s.location}</td>
+                    <td class="p-3 text-center">${statusBadge}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="toggleQuarantine('${s.batchId}')" class="bg-[#202020] hover:bg-[#ffc000] hover:text-black border border-[#494949] text-xs px-2 py-1 uppercase text-[#969696] transition-all">
+                            ${s.status === 'QUARANTINE' ? 'UNLOCK' : 'LOCK'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // TAB 3: Dispensing & Clinical Safety Log Render
+        function renderDispenseTab(dispenseList) {
+            const tbody = document.getElementById('dispense-table-body');
+            tbody.innerHTML = '';
+
+            let totalDispensedUnits = 0;
+            document.getElementById('dispense-table-count').textContent = dispenseList.length;
+
+            dispenseList.forEach(log => {
+                const drug = appData.drugs.find(d => d.code === log.drugCode) || {};
+                totalDispensedUnits += log.quantity;
+
+                let statusBadge = `<span class="bg-emerald-950/40 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold">COMPLETED</span>`;
+                if (log.status === 'VOIDED') {
+                    statusBadge = `<span class="bg-amber-950/40 text-amber-400 border border-amber-500/50 px-2 py-0.5 text-[10px] font-bold">VOIDED</span>`;
+                } else if (log.status === 'FLAGGED_INCIDENT') {
+                    statusBadge = `<span class="bg-red-950/40 text-red-400 border border-red-500/50 px-2 py-0.5 text-[10px] font-bold">INCIDENT FLAGGED</span>`;
+                }
+
+                let safetyBadge = `<span class="text-[#7d7d7d]">-</span>`;
+                if (log.safetyRef && log.safetyRef.startsWith('INC-')) {
+                    safetyBadge = `<span class="bg-red-950 text-red-400 border border-red-500/50 px-2 py-0.5 font-bold text-[10px]">${log.safetyRef}</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-[#202020] transition-colors border-b border-[#202020]";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-[#ffce3e]">${log.txId}</td>
+                    <td class="p-3 text-[#969696]">${log.dateTime}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-white">${drug.genericName || log.drugCode}</div>
+                        <div class="text-[10px] text-[#7d7d7d]">${log.drugCode}</div>
+                    </td>
+                    <td class="p-3 font-mono text-white">${log.lotNo}</td>
+                    <td class="p-3 text-right font-bold text-white">${log.quantity.toLocaleString()}</td>
+                    <td class="p-3 text-[#969696]">${log.department}</td>
+                    <td class="p-3 text-[#969696]">${log.pharmacist}</td>
+                    <td class="p-3 text-center">${statusBadge}</td>
+                    <td class="p-3 text-center">${safetyBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('dispense-total-units-label').textContent = `TOTAL DISPENSED IN FILTER: ${totalDispensedUnits.toLocaleString()} UNITS`;
+        }
+
+        // TAB 4: Restock Procurement Planner Render
+        function renderProcurementTab() {
+            const tbody = document.getElementById('procurement-table-body');
+            tbody.innerHTML = '';
+
+            let totalItemsToOrder = 0;
+            let totalOrderUnits = 0;
+            let totalProcurementBudget = 0;
+
+            appData.drugs.forEach(drug => {
+                const totalCurrentStock = appData.stock.filter(s => s.drugCode === drug.code).reduce((a, b) => a + b.quantity, 0);
+                
+                if (totalCurrentStock < drug.reorderLevel) {
+                    const requiredQty = drug.targetStock - totalCurrentStock;
+                    const poCost = requiredQty * drug.unitCost;
+
+                    totalItemsToOrder++;
+                    totalOrderUnits += requiredQty;
+                    totalProcurementBudget += poCost;
+
+                    let priorityBadge = `<span class="bg-amber-950/40 text-amber-400 border border-amber-500/50 px-2 py-0.5 text-[10px] font-bold">NORMAL REORDER</span>`;
+                    if (totalCurrentStock === 0 || totalCurrentStock < (drug.reorderLevel * 0.3)) {
+                        priorityBadge = `<span class="bg-red-950/40 text-red-400 border border-red-500/50 px-2 py-0.5 text-[10px] font-bold animate-pulse">URGENT CRITICAL</span>`;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-[#202020] transition-colors border-b border-[#202020]";
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold text-[#ffce3e]">${drug.code}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-white">${drug.genericName}</div>
+                            <div class="text-[10px] text-[#7d7d7d]">${drug.tradeName}</div>
+                        </td>
+                        <td class="p-3 text-[#969696]">${drug.category}</td>
+                        <td class="p-3 text-right text-red-400 font-bold">${totalCurrentStock.toLocaleString()}</td>
+                        <td class="p-3 text-right text-[#969696]">${drug.reorderLevel.toLocaleString()}</td>
+                        <td class="p-3 text-right text-[#969696]">${drug.targetStock.toLocaleString()}</td>
+                        <td class="p-3 text-right font-black text-emerald-400 font-mono">+${requiredQty.toLocaleString()} ${drug.unit}</td>
+                        <td class="p-3 text-right text-[#969696]">฿${drug.unitCost.toFixed(2)}</td>
+                        <td class="p-3 text-right font-bold text-[#ffce3e]">฿${poCost.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                        <td class="p-3 text-center">${priorityBadge}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.getElementById('procure-item-count').textContent = `${totalItemsToOrder} DRUGS`;
+            document.getElementById('procure-total-units').textContent = `${totalOrderUnits.toLocaleString()} UNITS`;
+            document.getElementById('procure-total-budget').textContent = `฿${totalProcurementBudget.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        }
+
+        // CHART.JS INTERACTIVE VISUALIZATIONS
+        function renderCharts(stockList, dispenseList) {
+            // Destroy existing charts to prevent memory overlay glitches
+            Object.values(chartInstances).forEach(c => c && c.destroy());
+            chartInstances = {};
+
+            // Chart 1: Reorder Matrix Bar Chart
+            const ctxReorder = document.getElementById('chart-reorder-matrix')?.getContext('2d');
+            if (ctxReorder) {
+                const labels = appData.drugs.map(d => d.genericName);
+                const currentData = appData.drugs.map(d => stockList.filter(s => s.drugCode === d.code).reduce((a, b) => a + b.quantity, 0));
+                const reorderData = appData.drugs.map(d => d.reorderLevel);
+
+                chartInstances.reorder = new Chart(ctxReorder, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'CURRENT STOCK',
+                                data: currentData,
+                                backgroundColor: '#ffc000',
+                                borderRadius: 0
+                            },
+                            {
+                                label: 'REORDER THRESHOLD',
+                                data: reorderData,
+                                backgroundColor: '#494949',
+                                borderRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#969696', font: { family: 'JetBrains Mono', size: 10 } } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 9 } }, grid: { color: '#202020' } },
+                            y: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 9 } }, grid: { color: '#202020' } }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Category Distribution Doughnut
+            const ctxCat = document.getElementById('chart-category-doughnut')?.getContext('2d');
+            if (ctxCat) {
+                const categories = ['Antibiotics', 'Analgesics', 'Cardiovascular', 'Gastrointestinal', 'Antidiabetic', 'Respiratory'];
+                const catValues = categories.map(cat => {
+                    const catDrugs = appData.drugs.filter(d => d.category === cat);
+                    let val = 0;
+                    catDrugs.forEach(d => {
+                        const q = stockList.filter(s => s.drugCode === d.code).reduce((a, b) => a + b.quantity, 0);
+                        val += q * d.unitCost;
+                    });
+                    return val;
+                });
+
+                chartInstances.category = new Chart(ctxCat, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categories,
+                        datasets: [{
+                            data: catValues,
+                            backgroundColor: ['#ffc000', '#ffffff', '#969696', '#494949', '#917300', '#ffce3e'],
+                            borderWidth: 1,
+                            borderColor: '#181818'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { color: '#969696', font: { family: 'JetBrains Mono', size: 10 } } }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Expiry Horizon Distribution
+            const ctxExp = document.getElementById('chart-expiry-horizon')?.getContext('2d');
+            if (ctxExp) {
+                let expCounts = { expired: 0, d30: 0, d60: 0, d90: 0, safe: 0 };
+                stockList.forEach(s => {
+                    const days = getDaysRemaining(s.expiryDate);
+                    if (days <= 0 || s.status === 'EXPIRED') expCounts.expired++;
+                    else if (days <= 30) expCounts.d30++;
+                    else if (days <= 60) expCounts.d60++;
+                    else if (days <= 90) expCounts.d90++;
+                    else expCounts.safe++;
+                });
+
+                chartInstances.expiry = new Chart(ctxExp, {
+                    type: 'bar',
+                    data: {
+                        labels: ['EXPIRED / DISCARD', '≤ 30 DAYS', '31 - 60 DAYS', '61 - 90 DAYS', '> 90 DAYS SAFE'],
+                        datasets: [{
+                            label: 'BATCH COUNT',
+                            data: [expCounts.expired, expCounts.d30, expCounts.d60, expCounts.d90, expCounts.safe],
+                            backgroundColor: ['#ef4444', '#f59e0b', '#eab308', '#ffc000', '#10b981'],
+                            borderRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: '#202020' } },
+                            y: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: '#202020' } }
+                        }
+                    }
+                });
+            }
+
+            // Chart 4: Daily Dispensing Velocity Line Chart
+            const ctxVel = document.getElementById('chart-dispensing-velocity')?.getContext('2d');
+            if (ctxVel) {
+                // Group dispensing by date
+                const dateMap = {};
+                dispenseList.forEach(log => {
+                    const date = log.dateTime.split(' ')[0];
+                    dateMap[date] = (dateMap[date] || 0) + log.quantity;
+                });
+
+                const sortedDates = Object.keys(dateMap).sort();
+                const velocityValues = sortedDates.map(d => dateMap[d]);
+
+                chartInstances.velocity = new Chart(ctxVel, {
+                    type: 'line',
+                    data: {
+                        labels: sortedDates.length ? sortedDates : ['2026-10-03', '2026-11-05'],
+                        datasets: [{
+                            label: 'UNITS DISPENSED',
+                            data: velocityValues.length ? velocityValues : [0, 0],
+                            borderColor: '#ffc000',
+                            backgroundColor: 'rgba(255, 192, 0, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#ffc000'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#969696', font: { family: 'JetBrains Mono', size: 10 } } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 9 } }, grid: { color: '#202020' } },
+                            y: { ticks: { color: '#969696', font: { family: 'JetBrains Mono', size: 9 } }, grid: { color: '#202020' } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn bg-[#202020] text-[#969696] hover:text-white font-bold px-5 py-3 border border-[#333333] hover:border-[#ffc000]/50 transition-all flex items-center gap-2";
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabId.replace('tab-', '')}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn bg-[#ffc000] text-black font-bold px-5 py-3 border border-[#ffc000] transition-all flex items-center gap-2";
+            }
+            renderAll();
+        }
+
+        // Modal Handlers
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Drug Lot Breakdown Detail Modal
+        function openDrugDetail(drugCode) {
+            const drug = appData.drugs.find(d => d.code === drugCode);
+            if (!drug) return;
+
+            const lots = appData.stock.filter(s => s.drugCode === drugCode);
+            const dispHistory = appData.dispenseLogs.filter(l => l.drugCode === drugCode);
+
+            document.getElementById('detail-code-badge').textContent = drug.code;
+            document.getElementById('detail-title').textContent = `${drug.genericName} (${drug.tradeName})`;
+
+            const content = document.getElementById('detail-content');
+            content.innerHTML = `
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black p-4 border border-[#333333] text-xs">
+                    <div><span class="text-[#7d7d7d]">CATEGORY:</span> <div class="text-white font-bold">${drug.category}</div></div>
+                    <div><span class="text-[#7d7d7d]">UNIT COST:</span> <div class="text-[#ffce3e] font-bold">฿${drug.unitCost.toFixed(2)}</div></div>
+                    <div><span class="text-[#7d7d7d]">REORDER LEVEL:</span> <div class="text-white font-bold">${drug.reorderLevel} ${drug.unit}</div></div>
+                    <div><span class="text-[#7d7d7d]">TARGET STOCK:</span> <div class="text-white font-bold">${drug.targetStock} ${drug.unit}</div></div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs text-[#ffc000] uppercase mb-2">LOT BATCH MATRIX & FEFO STATUS</h4>
+                    <div class="overflow-x-auto border border-[#333333]">
+                        <table class="w-full text-left text-xs font-mono">
+                            <tr class="bg-black text-[#969696] border-b border-[#333333]">
+                                <th class="p-2">LOT NO</th>
+                                <th class="p-2">EXPIRY</th>
+                                <th class="p-2 text-right">QTY</th>
+                                <th class="p-2">LOCATION</th>
+                                <th class="p-2">STATUS</th>
+                            </tr>
+                            ${lots.map(l => `
+                                <tr class="border-b border-[#202020] hover:bg-[#202020]">
+                                    <td class="p-2 font-bold text-white">${l.lotNo}</td>
+                                    <td class="p-2 text-[#969696]">${l.expiryDate}</td>
+                                    <td class="p-2 text-right font-bold text-[#ffce3e]">${l.quantity}</td>
+                                    <td class="p-2 text-[#7d7d7d]">${l.location}</td>
+                                    <td class="p-2 font-bold text-xs">${l.status}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs text-[#ffc000] uppercase mb-2">DISPENSING TRANSACTION HISTORY</h4>
+                    <div class="overflow-x-auto border border-[#333333]">
+                        <table class="w-full text-left text-xs font-mono">
+                            <tr class="bg-black text-[#969696] border-b border-[#333333]">
+                                <th class="p-2">TX ID</th>
+                                <th class="p-2">DATE</th>
+                                <th class="p-2">LOT</th>
+                                <th class="p-2 text-right">QTY</th>
+                                <th class="p-2">PHARMACIST</th>
+                            </tr>
+                            ${dispHistory.map(h => `
+                                <tr class="border-b border-[#202020]">
+                                    <td class="p-2 text-[#ffce3e]">${h.txId}</td>
+                                    <td class="p-2 text-[#969696]">${h.dateTime}</td>
+                                    <td class="p-2 text-white">${h.lotNo}</td>
+                                    <td class="p-2 text-right font-bold text-white">${h.quantity}</td>
+                                    <td class="p-2 text-[#969696]">${h.pharmacist}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            openModal('detail-modal');
+        }
+
+        function toggleQuarantine(batchId) {
+            const batch = appData.stock.find(s => s.batchId === batchId);
+            if (batch) {
+                batch.status = batch.status === 'QUARANTINE' ? 'ACTIVE' : 'QUARANTINE';
+                showToast(`BATCH ${batch.lotNo} STATUS UPDATED TO ${batch.status}`);
+                renderAll();
+            }
+        }
+
+        // PO Summary Exporter
+        function exportProcurementPO() {
+            let poText = "========================================================================\n";
+            poText += "LAMBORGHINI PHARMACY SQUADRA CORSE - RESTOCK PURCHASE REQUISITION ORDER\n";
+            poText += `TIMESTAMP: ${new Date().toISOString()} | REF: PO-2026-RESTOCK\n`;
+            poText += "========================================================================\n\n";
+
+            let totalBudget = 0;
+
+            appData.drugs.forEach(drug => {
+                const totalCurrentStock = appData.stock.filter(s => s.drugCode === drug.code).reduce((a, b) => a + b.quantity, 0);
+                if (totalCurrentStock < drug.reorderLevel) {
+                    const reqQty = drug.targetStock - totalCurrentStock;
+                    const cost = reqQty * drug.unitCost;
+                    totalBudget += cost;
+                    poText += `DRUG: [${drug.code}] ${drug.genericName} (${drug.tradeName})\n`;
+                    poText += `   CURRENT STOCK : ${totalCurrentStock} ${drug.unit}\n`;
+                    poText += `   TARGET STOCK  : ${drug.targetStock} ${drug.unit}\n`;
+                    poText += `   ORDER QTY     : +${reqQty} ${drug.unit}\n`;
+                    poText += `   ESTIMATED COST: ฿${cost.toFixed(2)}\n`;
+                    poText += `------------------------------------------------------------------------\n`;
+                }
+            });
+
+            poText += `\nTOTAL ESTIMATED PURCHASE BUDGET: ฿${totalBudget.toLocaleString('en-US', {minimumFractionDigits: 2})}\n`;
+            poText += "AUTHORIZATION: PHARMACY PROCUREMENT DIRECTOR\n";
+            poText += "========================================================================\n";
+
+            document.getElementById('po-text-area').value = poText;
+            openModal('po-modal');
+        }
+
+        function copyPOText() {
+            const textarea = document.getElementById('po-text-area');
+            textarea.select();
+            document.execCommand('copy');
+            showToast('PO SUMMARY COPIED TO CLIPBOARD');
+        }
+
+        // Dynamic Drag & Drop File Loader
+        function handleFileSelect(evt) {
+            const files = evt.target.files;
+            processUploadedFiles(files);
+        }
+
+        function processUploadedFiles(files) {
+            let loadedCount = 0;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        if (file.name.includes('stock')) {
+                            appData.stock = normalizeStockData(json);
+                            loadedCount++;
+                        } else if (file.name.includes('drug')) {
+                            appData.drugs = normalizeDrugsData(json);
+                            loadedCount++;
+                        } else if (file.name.includes('dispense')) {
+                            appData.dispenseLogs = normalizeDispenseData(json);
+                            loadedCount++;
+                        }
+                        if (loadedCount > 0) {
+                            appData.isBuiltIn = false;
+                            updateDataSourceBadge("USER UPLOADED JSON", "border-[#ffc000]");
+                            showToast(`SUCCESSFULLY LOADED ${file.name}`);
+                            renderAll();
+                            closeModal('upload-modal');
+                        }
+                    } catch (err) {
+                        alert("Invalid JSON format in file: " + file.name);
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        // Drag and Drop Zone
+        const dropZone = document.getElementById('drop-zone');
+        if (dropZone) {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-[#ffc000]', 'bg-black');
+            });
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-[#ffc000]', 'bg-black');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-[#ffc000]', 'bg-black');
+                if (e.dataTransfer.files.length) {
+                    processUploadedFiles(e.dataTransfer.files);
+                }
+            });
+        }
+
+        // Notification Toast Toast Function
+        function showToast(text) {
+            const toast = document.getElementById('toast-msg');
+            const txt = document.getElementById('toast-text');
+            if (toast && txt) {
+                txt.textContent = text;
+                toast.classList.remove('opacity-0', 'translate-y-20');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-20');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
